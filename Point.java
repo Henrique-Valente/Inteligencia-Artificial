@@ -1,4 +1,3 @@
-import java.util.Scanner;
 public class Point{
     int x;
     int y;
@@ -10,14 +9,8 @@ public class Point{
         id = id1.toUpperCase();
     }
 
-    public void toArrayPoint(Point[] points, int n){
-        Scanner in = new Scanner(System.in);
-        points = new Point[n]; // Array de pontos 
-
-        for (int i = 0; i < n; i++) { // Inserir os novos pontos no Array
-            Point point = new Point(in.nextInt(), in.nextInt(), in.next());
-            points[i] = point;
-        }
+    public double distance(Point b){
+        return Math.pow((double)b.x - (double)this.x, 2) + Math.pow((double)b.y - (double)this.y, 2);
     }
 
     public String toString(){
