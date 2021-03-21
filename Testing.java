@@ -149,13 +149,13 @@ public class Testing {
         int p1=0, p2=0, candidate=0,bestChoice = Integer.MAX_VALUE;
         for(int i=0;i<choices.size();i+=2){
             //checking possible candidate
-            swap(set, choices.get(i), choices.get(i+1));
+            swap(set, mod(choices.get(i)+1,n), choices.get(i+1));
             candidate = interCount(set, null);
             //restauring original set
-            swap(set, choices.get(i), choices.get(i+1));
+            swap(set, mod(choices.get(i)+1,n), choices.get(i+1));
             if(bestChoice > candidate){
                 bestChoice = candidate;
-                p1 = choices.get(i);
+                p1 = mod(choices.get(i)+1,n);
                 p2 = choices.get(i+1);
             }
         }
@@ -190,6 +190,7 @@ public class Testing {
         
         //point = perm(point);
         hillClimbing(point,'a');
+        
         
         for(int i = 0; i<n ; i++) System.out.print(point[i].id + " ");
         System.out.println();
