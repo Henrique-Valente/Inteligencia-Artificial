@@ -3,6 +3,12 @@ public class Point{
     int y;
     String id;
 
+    public static Point subPoint(Point a, Point b){
+        int x = a.x - b.x;
+        int y = a.y - b.y;
+        return new Point(x,y,"");
+    }
+    
     Point(int x1, int y1, String id1){
         x = x1;
         y = y1;
