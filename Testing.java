@@ -168,12 +168,40 @@ public class Testing {
         return -1;
     }
 
+    // Hill climbing first improvement step
+    private static int hillFirstStep(Point[] set){
+        ArrayList<Integer> choices = new ArrayList<>();
+        Point temp;
+        int intersects = interCount(set,choices);
+        int p1=0, p2=0, candidate=0;
+        for(int i=0;i<choices.size();i+=2){
+            //checking possible candidate
+            swap(set, mod(choices.get(i)+1,n), choices.get(i+1));
+            candidate = interCount(set, null);
+            if(candidate == 0) return 0;
+            if(candidate < intersects) return hillFirstStep(set); //achived a better state
+            //restauring original set
+            swap(set, mod(choices.get(i)+1,n), choices.get(i+1));
+        }
+        // got stuck no choice is better
+        return -1;
+    }
+
     public static void hillClimbing(Point[] set, char mode){
         int result;
-        if(mode == 'a'){
-            while(hillBestStep(set) == -1)
-                Collections.shuffle(Arrays.asList(set));
+        switch(mode){
+            case 'a':
+                while(hillBestStep(set) == -1) //restart
+                    Collections.shuffle(Arrays.asList(set));
+                break;
+            case 'b':
+                while(hillFirstStep(set) == -1) //restart
+                    Collections.shuffle(Arrays.asList(set));
+                break;
+            default:
+                return;
         }
+
     }
 
 
@@ -188,8 +216,8 @@ public class Testing {
         for(int i = 0; i<n ; i++) System.out.print(point[i].id + " ");
         System.out.println();
         
-        //point = perm(point);
-        hillClimbing(point,'a');
+        point = perm(point);
+        hillClimbing(point,'b');
         
         
         for(int i = 0; i<n ; i++) System.out.print(point[i].id + " ");
