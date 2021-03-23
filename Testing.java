@@ -111,23 +111,20 @@ public class Testing {
     // complexidade temporal: O(n^2)
     private static int interCount(Point[] set, ArrayList<Integer> choices){
         int count=0;
-        boolean[] visited = new boolean[n];
         for(int i=0;i<n;i++){
-            for(int j=mod(i+2,n); mod(j,n)!= mod(i-1,n) ;j++){
-                if(segIntersect(set[i], set[mod(i+1,n)], set[mod(j,n)], set[mod(j+1,n)]) ) {
+            for(int j=i+2;j<n;j++){
+                if(segIntersect(set[i], set[i+1], set[j], set[mod(j+1,n)]) && i!=mod(j+1,n)) {
                     if(choices != null){
                         choices.add(i);
-                        choices.add(mod(j,n));
+                        choices.add(j);
                     }
                     ++count;
                 }
                 // boolean v = segIntersect(set[i], set[mod(i+1,n)], set[mod(j,n)], set[mod(j+1,n)]);
                 // System.out.println(v + " "+"|"+ set[i].id + ", " +set[mod(i+1,n)].id + ", " + set[mod(j,n)].id + ", " +set[mod(j+1,n)].id);
             }
-            visited[i] = true;
-            visited[mod(i+1,n)] = true;
         }
-        return count/2; //this algorithm counts every intersection twice
+        return count;
     }
 
     //switches 2 points 
@@ -214,7 +211,6 @@ public class Testing {
         for(int i = 0; i<n ; i++) System.out.print(point[i].id + " ");
         System.out.println();
 
-        System.out.println(interCount(point, null));
         hillClimbing(point,'a');        
         
         for(int i = 0; i<n ; i++) System.out.print(point[i].id + " ");
