@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Testing {
     static boolean visited[];
@@ -191,6 +192,29 @@ public class Testing {
         return -1;
     }
 
+    private static int hillRandomStep(Point[] set, int perimeter){
+        ArrayList<Integer[]> candidates = new ArrayList<>();
+        int candidate = 0;
+        for(int i=0;i<n;i++){
+            for(int j=i+2;j<n;j++){
+                swap(set, i+1, j);
+                candidate = perimeterCount(set);
+                if(candidate < perimeter){
+                    Integer[] choice = new Integer[3];
+                    choice[0] = i+1;
+                    choice[1] = j;
+                    choice[2] = candidate;
+                    candidates.add(choice);
+                }
+                swap(set, i+1, j);
+            }
+        }
+        if(candidates.isEmpty()) return 0;
+        Integer[] chosen = candidates.get(ThreadLocalRandom.current().nextInt(0, candidates.size()));
+        swap(set, chosen[0],chosen[1]);
+        return hillRandomStep(set, chosen[2]);
+    }
+
     // Hill climbing first improvement step
     private static int hillFirstStep(Point[] set, int perimeter){
         int candidate=0;
@@ -198,13 +222,13 @@ public class Testing {
             for(int j=i+2;j<n;j++){
                 swap(set, i+1, j);
                 candidate = perimeterCount(set);
-                if(candidate > perimeter)
+                if(candidate < perimeter)
                     return hillFirstStep(set, candidate);
                 swap(set, i+1, j);
             }
         }
         // got stuck no choice is better
-        return -1;
+        return 0;
     }
 
     private static int hillBestPerimeter(Point[] set, int perimeter){
@@ -245,11 +269,11 @@ public class Testing {
             
             case 'b':
                 perimeter = perimeterCount(set);
-                hillBestPerimeter(set, perimeter);
+                hillFirstStep(set, perimeter);
                 while( (count = interCount(set, null)) != 0){
                     Collections.shuffle(Arrays.asList(set));
                     perimeter = perimeterCount(set);
-                    hillBestPerimeter(set, perimeter);
+                    hillFirstStep(set, perimeter);
                 }
                 break;
             case 'c':
@@ -258,6 +282,15 @@ public class Testing {
                 while(hillBestIntersect(set, choices) == -1){
                     Collections.shuffle(Arrays.asList(set));
                     interCount(set,choices);
+                }
+                break;
+            case 'd':
+                perimeter = perimeterCount(set);
+                hillRandomStep(set, perimeter);
+                while( (count = interCount(set, null)) != 0){
+                    Collections.shuffle(Arrays.asList(set));
+                    perimeter = perimeterCount(set);
+                    hillRandomStep(set, perimeter);
                 }
                 break;
             default:
@@ -273,9 +306,14 @@ public class Testing {
         point = new Point[n];
         point = toArrayPoint(point);
          
-        System.out.println(Arrays.toString(point));
-        
+        point = perm(point);
 
+        for(int i = 0; i<n ; i++) System.out.print(point[i].id + "(" + point[i].x+" "+point[i].y+")"+" ");
+        System.out.println();
+
+        hillClimbing(point,'d');        
         
+        for(int i = 0; i<n ; i++) System.out.print(point[i].id + " ");
+        System.out.println();
     }
 }
