@@ -149,6 +149,7 @@ public class Testing {
 
             //restauring original set
             swap(set, mod(choices.get(i)+1,n), choices.get(i+1));
+            // if we reached a local maximum (possibly global) save
             if(bestChoice > candidate){
                 bestChoice = candidate;
                 nextChoiceList = candidateList;
@@ -212,12 +213,12 @@ public class Testing {
         point = new Point[n];
         point = toArrayPoint(point, n, in);
          
-         
-        point = perm(point);
+        // point = perm(point);
+
         for(int i = 0; i<n ; i++) System.out.print(point[i].id + " ");
         System.out.println();
 
-        hillClimbing(point,'a');        
+        hillClimbing(point,'b');        
         
         for(int i = 0; i<n ; i++) System.out.print(point[i].id + " ");
         System.out.println();
