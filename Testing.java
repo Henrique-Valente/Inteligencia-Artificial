@@ -25,7 +25,7 @@ public class Testing {
         return ponto;
     }
 
-    public static Point[] toArrayPoint(Point[] points){
+    public static Point[] genRand(Point[] points){
         points = new Point[n];        // Array de pontos 
         Point toInsert;
         List<Point> pointList = new ArrayList<>();
@@ -37,6 +37,16 @@ public class Testing {
                 points[i] = toInsert;
             } 
             else toInsert = pointGen(m);
+        }
+        return points;
+    }
+    
+     public static Point[] toArrayPoint(Point[] points, Scanner in){
+        points = new Point[n];
+
+        for(int i=1; i<=n; i++){
+            Point ponto = new Point(in.nextInt(), in.nextInt(), "P" + i);
+            points[i-1] = ponto;
         }
         return points;
     }
@@ -304,11 +314,11 @@ public class Testing {
         n = in.nextInt();
         m = in.nextInt();
         point = new Point[n];
-        point = toArrayPoint(point);
+        point = toArrayPoint(point, in);
          
         point = perm(point);
 
-        for(int i = 0; i<n ; i++) System.out.print(point[i].id + "(" + point[i].x+" "+point[i].y+")"+" ");
+        for(int i = 0; i<n ; i++) System.out.print(point[i] + " ");
         System.out.println();
 
         hillClimbing(point,'d');        
