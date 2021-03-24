@@ -177,18 +177,16 @@ public class Testing {
     }
 
     // Hill climbing first improvement step
-    private static int hillFirstStep(Point[] set, ArrayList<Integer> choices){
-        int intersects = choices.size();
+    private static int hillFirstStep(Point[] set, int perimeter){
         int candidate=0;
-        for(int i=0;i<choices.size();i+=2){
-            //checking possible candidate
-            swap(set, mod(choices.get(i)+1,n), choices.get(i+1));
-            ArrayList<Integer> candidateList = new ArrayList<>();
-            candidate = interCount(set, candidateList);
-            if(candidate == 0) return 0;
-            if(candidate < intersects) return hillFirstStep(set, candidateList); //reached a better state
-            //restauring original set
-            swap(set, mod(choices.get(i)+1,n), choices.get(i+1));
+        for(int i=0;i<n;i++){
+            for(int j=i+2;j<n;j++){
+                swap(set, i+1, j);
+                candidate = perimeterCount(set);
+                if(candidate > perimeter)
+                    return hillFirstStep(set, candidate);
+                swap(set, i+1, j);
+            }
         }
         // got stuck no choice is better
         return -1;
@@ -218,9 +216,10 @@ public class Testing {
 
     public static void hillClimbing(Point[] set, char mode){
         ArrayList<Integer> choices = new ArrayList<Integer>();
+        int perimeter, count=0;
         switch(mode){
             case 'a':
-                int perimeter = perimeterCount(set), count=0;
+                perimeter = perimeterCount(set);
                 hillBestPerimeter(set, perimeter);
                 while( (count = interCount(set, null)) != 0){
                     Collections.shuffle(Arrays.asList(set));
@@ -230,10 +229,12 @@ public class Testing {
                 break;
             
             case 'b':
-                interCount(set,choices);
-                while(hillFirstStep(set,choices) == -1){
+                perimeter = perimeterCount(set);
+                hillBestPerimeter(set, perimeter);
+                while( (count = interCount(set, null)) != 0){
                     Collections.shuffle(Arrays.asList(set));
-                    interCount(set,choices);
+                    perimeter = perimeterCount(set);
+                    hillBestPerimeter(set, perimeter);
                 }
                 break;
             case 'c':
@@ -261,7 +262,7 @@ public class Testing {
         for(int i = 0; i<n ; i++) System.out.print(point[i].id + " ");
         System.out.println();
 
-        hillClimbing(point,'c');        
+        hillClimbing(point,'b');        
         
         for(int i = 0; i<n ; i++) System.out.print(point[i].id + " ");
         System.out.println();
