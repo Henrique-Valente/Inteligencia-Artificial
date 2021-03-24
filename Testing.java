@@ -124,7 +124,7 @@ public class Testing {
         }
         return count;
     }
-
+    
     // given the state ABCD will return AB^2 + BC^2 + CD^2 + DA^2
     private static int perimeterCount(Point[] set){
         int perimeter=0;
@@ -183,7 +183,7 @@ public class Testing {
             for(int j=i+2;j<n;j++){
                 swap(set, i+1, j);
                 candidate = perimeterCount(set);
-                if(candidate > perimeter)
+                if(candidate < perimeter)
                     return hillFirstStep(set, candidate);
                 swap(set, i+1, j);
             }
@@ -230,11 +230,11 @@ public class Testing {
             
             case 'b':
                 perimeter = perimeterCount(set);
-                hillBestPerimeter(set, perimeter);
+                hillFirstStep(set, perimeter);
                 while( (count = interCount(set, null)) != 0){
                     Collections.shuffle(Arrays.asList(set));
                     perimeter = perimeterCount(set);
-                    hillBestPerimeter(set, perimeter);
+                    hillFirstStep(set, perimeter);
                 }
                 break;
             case 'c':
@@ -262,7 +262,7 @@ public class Testing {
         for(int i = 0; i<n ; i++) System.out.print(point[i].id + " ");
         System.out.println();
 
-        hillClimbing(point,'b');        
+        hillClimbing(point,'c');        
         
         for(int i = 0; i<n ; i++) System.out.print(point[i].id + " ");
         System.out.println();
