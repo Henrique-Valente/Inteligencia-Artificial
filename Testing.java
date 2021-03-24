@@ -120,8 +120,6 @@ public class Testing {
                     }
                     ++count;
                 }
-                // boolean v = segIntersect(set[i], set[mod(i+1,n)], set[mod(j,n)], set[mod(j+1,n)]);
-                // System.out.println(v + " "+"|"+ set[i].id + ", " +set[mod(i+1,n)].id + ", " + set[mod(j,n)].id + ", " +set[mod(j+1,n)].id);
             }
         }
         return count;
@@ -137,26 +135,30 @@ public class Testing {
     }
 
     // Hill climbing best improvement step
-    private static int hillBestStep(Point[] set){
-        ArrayList<Integer> choices = new ArrayList<>();
+    private static int hillBestStep(Point[] set, ArrayList<Integer> choices){
+        ArrayList<Integer> nextChoiceList = new ArrayList<>();
         Point temp;
-        int intersects = interCount(set,choices);
+        int intersects = choices.size();
         int p1=0, p2=0, candidate=0,bestChoice = Integer.MAX_VALUE;
         for(int i=0;i<choices.size();i+=2){
             //checking possible candidate
             swap(set, mod(choices.get(i)+1,n), choices.get(i+1));
-            candidate = interCount(set, null);
+
+            ArrayList<Integer> candidateList = new ArrayList<>();
+            candidate = interCount(set, candidateList);
+
             //restauring original set
             swap(set, mod(choices.get(i)+1,n), choices.get(i+1));
             if(bestChoice > candidate){
                 bestChoice = candidate;
+                nextChoiceList = candidateList;
                 p1 = mod(choices.get(i)+1,n);
                 p2 = choices.get(i+1);
             }
         }
         if(bestChoice < intersects){
             swap(set, p1, p2);
-            if(bestChoice != 0) return hillBestStep(set);
+            if(bestChoice != 0) return hillBestStep(set,nextChoiceList);
             return 0;
         }
         // got stuck no choice is better 
@@ -164,17 +166,16 @@ public class Testing {
     }
 
     // Hill climbing first improvement step
-    private static int hillFirstStep(Point[] set){
-        ArrayList<Integer> choices = new ArrayList<>();
-        Point temp;
-        int intersects = interCount(set,choices);
-        int p1=0, p2=0, candidate=0;
+    private static int hillFirstStep(Point[] set, ArrayList<Integer> choices){
+        int intersects = choices.size();
+        int candidate=0;
         for(int i=0;i<choices.size();i+=2){
             //checking possible candidate
             swap(set, mod(choices.get(i)+1,n), choices.get(i+1));
-            candidate = interCount(set, null);
+            ArrayList<Integer> candidateList = new ArrayList<>();
+            candidate = interCount(set, candidateList);
             if(candidate == 0) return 0;
-            if(candidate < intersects) return hillFirstStep(set); //achived a better state
+            if(candidate < intersects) return hillFirstStep(set, candidateList); //reached a better state
             //restauring original set
             swap(set, mod(choices.get(i)+1,n), choices.get(i+1));
         }
@@ -183,20 +184,25 @@ public class Testing {
     }
 
     public static void hillClimbing(Point[] set, char mode){
-        int result;
+        ArrayList<Integer> choices = new ArrayList<Integer>();
+        interCount(set,choices);
         switch(mode){
             case 'a':
-                while(hillBestStep(set) == -1) //restart
+                // while unsolved restart problem
+                while(hillBestStep(set, choices) == -1){
                     Collections.shuffle(Arrays.asList(set));
+                    interCount(set,choices);
+                }
                 break;
             case 'b':
-                while(hillFirstStep(set) == -1) //restart
+                while(hillFirstStep(set,choices) == -1){
                     Collections.shuffle(Arrays.asList(set));
+                    interCount(set,choices);
+                }
                 break;
             default:
                 return;
         }
-
     }
 
 
