@@ -8,7 +8,7 @@ public class Main {
         System.out.println(p1.details());
         p1.hillClimbing('c');
         System.out.println(p1.details());
-        p1.showGraph(1920,1080,100);
+        p1.showGraph(1366,768,10);
     }
     
 }

@@ -16,7 +16,7 @@ public class Screen extends JPanel{
     }
 
     public void paint(Graphics g) {
-        int scale = 50, i;
+        int i;
         int xoffset = xres/2, yoffset = yres/2;
         for(i=0;i<set.length-1;i++){
             // System.out.println( ((set[i].x*scale)+offset) + " " + ((set[i].y*scale)+offset) );
