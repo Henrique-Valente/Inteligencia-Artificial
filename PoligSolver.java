@@ -26,6 +26,20 @@ public class PoligSolver {
         state = genRand(m);
     }
 
+    // era o beta > alfa? n me lembro
+    public void ACO(int kAnts, double alfa, double beta, double q, double vRate){
+        Integer[] dist = new Integer[(n*n-n)/2];
+        Integer[] pheromone = new Integer[(n*n-n)/2];
+        for(int i=0;i<n;i++){
+            for(int j=0;i>j;j++){
+            }
+        }
+    }
+
+
+    // maps a n*n matrix where only the lower half is used (not counting with the [i][i] entrances)
+    private static int mapto(int i, int j){return ((i-1)*i)/2 + j;}
+
     // Cross product of 2 2d points or determinante of 2 vectors
     private static int crossProduct2d(MyPoint a, MyPoint b){ return a.x*b.y - b.x*a.y; }
 
@@ -249,7 +263,7 @@ public class PoligSolver {
     }
 
     private int search(int v){                  //Procura o ponto mais próximo de V
-        double closest = 0;
+        int closest = 0;
         int entered = 0;  //Serve para definir o primeiro visitado
         int tovisit = 0;
         visited[v] = true;

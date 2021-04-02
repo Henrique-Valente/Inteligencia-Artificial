@@ -23,8 +23,8 @@ public class MyPoint{
         id = id1.toUpperCase();
     }
 
-    public double distance(MyPoint b){
-        return Math.pow((double)b.x - (double)this.x, 2) + Math.pow((double)b.y - (double)this.y, 2);
+    public int distance(MyPoint b){
+        return (b.x - this.x)*(b.x - this.x) + (b.y - this.y)*(b.y - this.y);
     }
 
     public String toString(){
