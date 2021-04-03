@@ -47,7 +47,7 @@ public class PoligSolver {
      * numero pequeno mas maior de 0
      */
     // era o beta > alfa? n me lembro
-    public void ACOIter(int maxIter, int kAnts, final double alfa, final double beta, final double q,
+    private void ACOIter(int maxIter, int kAnts, final double alfa, final double beta, final double q,
             final double vRate) {
         int iter = 2;
         if (kAnts > n)
