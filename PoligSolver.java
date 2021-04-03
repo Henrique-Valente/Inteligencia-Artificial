@@ -106,7 +106,6 @@ public class PoligSolver {
                     int p1 = newStatePos[i], p2 = newStatePos[i + 1];
                     pheromones[mapto(p1, p2)] += vRate * (q / perimeter);
                 }
-
                 pheromones[mapto(newStatePos[n - 1], newStatePos[0])] += q / perimeter;
             }
             for (int i = 0; i < n; i++)
@@ -161,8 +160,7 @@ public class PoligSolver {
                     bestPos = j;
                 }
 
-                // theoretically this conditions means there are no better choices from here on
-                // out
+                // theoretically this conditions means there are no better choices from here on out
                 if (bestProb > (1 - probSum)) {
                     break;
                 }
