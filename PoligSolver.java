@@ -25,20 +25,92 @@ public class PoligSolver {
         this.n = n;
         state = genRand(m);
     }
-
+    
     // era o beta > alfa? n me lembro
-    public void ACO(int kAnts, double alfa, double beta, double q, double vRate){
-        Integer[] dist = new Integer[(n*n-n)/2];
-        Integer[] pheromone = new Integer[(n*n-n)/2];
+    public void ACO(int kAnts, final double alfa, final double beta, final double q, final double vRate){
+        // initializing theoretical array of distances and pheromones
+        double[] dist = new double[(n*n-n)/2];
+        double[] pheromones = new double[(n*n-n)/2];
+        // settings default values for pheromones and finding distances matrixes 
         for(int i=0;i<n;i++){
             for(int j=0;i>j;j++){
+                int pos = mapto(i,j);
+                pheromones[pos] = 1;
+                dist[pos] = q/state[i].distance(state[j]);
+                System.out.print(dist[pos] + " ");
             }
+            System.out.println();
         }
+        this.antPath(3, alfa, beta, vRate, dist, pheromones);
     }
 
+    private MyPoint[] antPath(int startPos, final double alfa, final double beta, final double vRate, double[] dist, double[] pheromones){
+        MyPoint[] newState = new MyPoint[n];
+        // represents nodes that have not been visited yet
+        LinkedList<Integer> notVis = new LinkedList<>(); 
+        // pos is simply used to convert from the matrix (i,j) form to the array form using mapto
+        int pos, newStateSize=0, perimeter=0;
+        double sum=0;
+        newState[0] = state[startPos];
+        newStateSize = 1;
+        for(int j=0;j<n;j++){
+            if(startPos != j) notVis.add(j);
+        }
+        // probSum é para remover so pa teste!
+        // Making the ant path
+        Double bestProb, curProb, probSum;
+        int bestPos, i=startPos;
+        Iterator<Integer> it;
+        // While there are still points not visited
+        while(newStateSize<n){
+            bestProb=curProb=Double.MIN_VALUE;
+            bestPos=-1;
+            probSum=0.0;
 
-    // maps a n*n matrix where only the lower half is used (not counting with the [i][i] entrances)
-    private static int mapto(int i, int j){return ((i-1)*i)/2 + j;}
+            sum=0.0;
+            // Calculating the sum [Tij]^alfa + [Nij]^Beta, where j is not visited yet
+            for(int j: notVis){
+                //System.out.println(i+ " " + j);
+                pos = mapto(i,j);
+                sum += Math.pow(pheromones[pos], alfa)*Math.pow(dist[pos], beta);
+            }
+            // Determining next point
+            it = notVis.listIterator();
+            while(it.hasNext()){
+                int j = ((Integer)it.next()).intValue();
+                //System.out.println(i+ " " + j);
+                pos = mapto(i,j);
+                curProb = Math.pow(pheromones[pos], alfa)*Math.pow(dist[pos], beta) / sum;
+                probSum += curProb;
+                if(curProb > bestProb){
+                    bestProb = curProb;
+                    bestPos = j;
+                }
+            }
+            //System.out.println(i+" "+bestPos+" "+probSum);
+            // Adding the next point
+            notVis.remove(Integer.valueOf(bestPos));
+            newState[newStateSize] = state[bestPos];
+            perimeter += this.state[i].distance(this.state[bestPos]) ;
+            System.out.println(i + " | " + bestPos);
+            newStateSize++;
+            i=bestPos;
+        }
+        perimeter += this.state[n-1].distance(newState[0]);
+        for(i=0;i<n;i++) System.out.print(newState[i]+" ");
+        System.out.println("perimeter="+perimeter);
+        System.out.println(perimeterCount(newState));
+        return newState;
+    }
+
+    /*
+    maps a n*n matrix where only the lower half is used (not counting with the [i][i] entrances)
+    returns sum (1..i-1) + j
+    */
+    private static int mapto(int i, int j){
+        if(i < j) return ((j-1)*j)/2 + i;
+        return ((i-1)*i)/2 + j;
+    }
 
     // Cross product of 2 2d points or determinante of 2 vectors
     private static int crossProduct2d(MyPoint a, MyPoint b){ return a.x*b.y - b.x*a.y; }
@@ -89,7 +161,7 @@ public class PoligSolver {
     // given the state ABCD will return AB^2 + BC^2 + CD^2 + DA^2
     private static int perimeterCount(MyPoint[] set){
         int perimeter=0;
-        for(int i=1;i<set.length-1;i++){
+        for(int i=1;i<set.length;i++){
             perimeter += set[i].distance(set[i-1]);
         }
         perimeter += set[set.length-1].distance(set[0]);
