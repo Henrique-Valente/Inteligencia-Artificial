@@ -459,6 +459,40 @@ public class PoligSolver {
 
         return save;
     }
+    
+    public static double schedule(double t, double r){
+        return t * r;
+    }
+
+    public void simulatedAnnealing(double temp, double r){
+        int curEnergy, nextEnergy, deltaEn; // Quantidade de interseções de cada permutação
+        int p1                      , p2;
+        Random rand = new Random();
+        MyPoint[] next;
+        ArrayList<Integer> interceptionsCur = new ArrayList<>();
+        curEnergy = interCount(state,interceptionsCur);
+   
+        for(int i=1; i<Integer.MAX_VALUE; i++){//static is life
+            if(curEnergy == 0) return; //Se não houver interseções, retornar
+            temp = schedule(temp,r);
+            if(temp < 0.001) return;
+            next = state.clone();
+            p1 = interceptionsCur.remove(rand.nextInt(interceptionsCur.size()));
+            p2 = interceptionsCur.remove(rand.nextInt(interceptionsCur.size()));
+            swap(next,mod(p1+1, n),p2);  // 2 Exchange!
+            nextEnergy = interCount(next,new ArrayList<Integer>());
+            deltaEn = nextEnergy - curEnergy;
+            if(deltaEn < 0){
+                state = next.clone();
+                curEnergy = nextEnergy;
+            }
+            else if(Math.exp((-deltaEn)/temp) >= Math.random()){
+                state = next;  // entre 0 e 1
+                curEnergy = nextEnergy;
+            }
+        }
+        return;
+    }
 
     public MyPoint[] genRand(int m) {
         MyPoint[] points = new MyPoint[n]; // Array de pontos
