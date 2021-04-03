@@ -28,9 +28,8 @@ public class PoligSolver {
 
     public void ACO2(int maxIter, int kAnts, final double alfa, final double beta, final double q, final double vRate) {
         this.ACOIter(maxIter, kAnts, alfa, beta, q, vRate);
-        int intersections; 
+        int intersections;
         while((intersections= interCount(this.state, null)) > 0){
-            this.state = this.perm();
             this.ACOIter(maxIter, kAnts, alfa, beta, q, vRate);
         }
         
@@ -46,10 +45,9 @@ public class PoligSolver {
      * caminho) melhorias pequeninas não são muito beneficadas por isso da sempre um
      * numero pequeno mas maior de 0
      */
-    // era o beta > alfa? n me lembro
     private void ACOIter(int maxIter, int kAnts, final double alfa, final double beta, final double q,
             final double vRate) {
-        int iter = 2;
+        int iter = 1;
         if (kAnts > n)
             return;
         // initializing theoretical array of distances and pheromones
@@ -72,7 +70,6 @@ public class PoligSolver {
         Integer[] bestStatePos = null;
         Random rand = new Random();
         int intersections = interCount(state, null), bestperimeter;
-        ;
         MyPoint[] newState = new MyPoint[n];
 
         while (intersections > 0 && iter <= maxIter) {
