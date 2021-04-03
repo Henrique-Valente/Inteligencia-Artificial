@@ -26,7 +26,7 @@ public class MyPoint{
     public int distance(MyPoint b){
         return (b.x - this.x)*(b.x - this.x) + (b.y - this.y)*(b.y - this.y);
     }
-
+    
     public String toString(){
         return id + ":" + "(" + x + "," + y + ")";
     }
