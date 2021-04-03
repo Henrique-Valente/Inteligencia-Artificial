@@ -26,10 +26,9 @@ public class PoligSolver {
         state = genRand(m);
     }
 
+    // Executes ACO with maxIter number of iternations if it doesnt find a solution it executes again
     public void ACO2(int maxIter, int kAnts, final double alfa, final double beta, final double q, final double vRate) {
-        this.ACOIter(maxIter, kAnts, alfa, beta, q, vRate);
-        int intersections;
-        while((intersections= interCount(this.state, null)) > 0){
+        while(interCount(this.state, null) > 0){
             this.ACOIter(maxIter, kAnts, alfa, beta, q, vRate);
         }
         
