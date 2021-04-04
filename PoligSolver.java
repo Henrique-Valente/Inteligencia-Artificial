@@ -273,7 +273,7 @@ public class PoligSolver {
     }
 
     // perimeterCount adapted to suit local search in ACO algorithm
-    public static int perimeterCount(MyPoint[] set, Integer[] pos) {
+    private static int perimeterCount(MyPoint[] set, Integer[] pos) {
         int perimeter = 0;
         for (int i = 1; i < set.length; i++) {
             perimeter += set[pos[i]].distance(set[pos[i - 1]]);
@@ -374,7 +374,7 @@ public class PoligSolver {
     }
 
     // Hill climbing first improvement step adapted to suit ACO local search
-    public static Integer hillFirstStep(MyPoint[] set, Integer[] pos, int perimeter, Integer out[]) {
+    private static Integer hillFirstStep(MyPoint[] set, Integer[] pos, int perimeter, Integer out[]) {
         int n = set.length;
         int candidate = 0;
         for (int i = 0; i < n; i++) {
