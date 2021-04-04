@@ -11,7 +11,7 @@ public class PoligSolver {
         in.nextInt(); // m não utilizado neste caso
         state = new MyPoint[n];
         for (int i = 1; i <= n; i++) {
-            MyPoint point = new MyPoint(in.nextInt(), in.nextInt(), "P" + i);
+            MyPoint point = new MyPoint(in.nextInt(), in.nextInt(), "P" + (i-1));
             state[i - 1] = point;
         }
     }
@@ -26,17 +26,24 @@ public class PoligSolver {
         state = genRand(m);
     }
 
-    // Executes ACO with maxIter number of iternations if it doesnt find a solution it executes again
-    public void ACO2(int maxIter, int kAnts, final double alfa, final double beta, final double q, final double vRate) {
-        while(interCount(this.state, null) > 0){
-            this.ACOIter(maxIter, kAnts, alfa, beta, q, vRate);
-        }
-        
+    public int interCount(){
+        return PoligSolver.interCount(this.state, null);
     }
 
-    public void ACO(int kAnts, final double alfa, final double beta, final double q, final double vRate) {
+    public int perimeterCount(){
+        return PoligSolver.perimeterCount(this.state);
+    }
+
+    // Executes ACO with maxIter number of iternations
+    public void ACO2(int maxIter, int kAnts, final double alfa, final double beta, final double q, final double vRate, boolean useLocalSearch) {
+        if (kAnts > n)
+            return;
+        this.ACOIter(maxIter, kAnts, alfa, beta, q, vRate, useLocalSearch);
+    }
+
+    public void ACO(int kAnts, final double alfa, final double beta, final double q, final double vRate, boolean useLocalSearch) {
         // Because no int is greater than Integer.MAX_VALUE it will never end
-        this.ACOIter(Integer.MAX_VALUE, kAnts, alfa, beta, q, vRate);
+        this.ACOIter(Integer.MAX_VALUE, kAnts, alfa, beta, q, vRate, useLocalSearch);
     }
 
     /*
@@ -44,23 +51,23 @@ public class PoligSolver {
      * caminho) melhorias pequeninas não são muito beneficadas por isso da sempre um
      * numero pequeno mas maior de 0
      */
-    private void ACOIter(int maxIter, int kAnts, final double alfa, final double beta, final double q,
-            final double vRate) {
+    private int ACOIter(int maxIter, int kAnts, final double alfa, final double beta, final double q,
+            final double vRate, boolean useLocalSearch) {
         int iter = 1;
         if (kAnts > n)
-            return;
+            return -1;
         // initializing theoretical array of distances and pheromones
         double[] dist = new double[(n * n - n) / 2];
         double[] pheromones = new double[(n * n - n) / 2];
+        double[] pheromonesChange = new double [(n * n - n) / 2];
         // settings default values for pheromones and finding distances matrixes
         for (int i = 0; i < n; i++) {
-            for (int j = 0; i > j; j++) {
+            for (int j = 0; j < i; j++) {
                 int pos = mapto(i, j);
                 pheromones[pos] = 1;
-                dist[pos] = ((double) 1) / state[i].distance(state[j]);
+                dist[pos] = 1.0 / state[i].distance(state[j]);
             }
         }
-
         /*
          * Creates k paths (or k states) from random starting points and checks if the
          * path with the lowest perimiter is solution state
@@ -68,48 +75,64 @@ public class PoligSolver {
         TreeSet<Integer> usedStartPoints = new TreeSet<>();
         Integer[] bestStatePos = null;
         Random rand = new Random();
-        int intersections = interCount(state, null), bestperimeter;
+        int intersections = interCount(state, null), bestperimeter=Integer.MAX_VALUE;
         MyPoint[] newState = new MyPoint[n];
-
+        
         while (intersections > 0 && iter <= maxIter) {
+            Arrays.fill(pheromonesChange,0);
             usedStartPoints.clear();
             for (int k = 0; k < kAnts; k++) {
                 bestperimeter = Integer.MAX_VALUE;
+
+                // start at a random point
                 int startPos = rand.nextInt(n);
                 while (usedStartPoints.contains(startPos)) {
                     startPos = rand.nextInt(n);
                 }
                 usedStartPoints.add(startPos);
+
+                // Construct new state
                 Object[] path = this.antPath(startPos, alfa, beta, dist, pheromones);
                 Integer[] newStatePos = ((Integer[]) path[0]);
                 int perimeter = ((Integer) path[1]);
+
+                if(useLocalSearch){
+                    // Local search (using hill climbing first step search)
+                    Integer[] output = new Integer[n];
+                    perimeter = hillFirstStep(this.state, newStatePos, perimeter, output);
+                    if(output[0] != null) newStatePos = output;
+                }
+                    
                 if (perimeter < bestperimeter) {
                     bestStatePos = newStatePos;
                 }
-                // Updating pheromones
-                // Evaporating all the pheronome
-                for (int i = 0; i < n; i++) {
-                    for (int j = 0; i > j; j++) {
-                        pheromones[mapto(i, j)] *= (1 - vRate);
-                    }
-                    // Not Tested
-                    // int p1 = newStatePos[i], p2 = newStatePos[mod(i+1,n)];
-                    // pheromones[mapto(p1,p2)] += vRate*(q/perimeter);
+                // Adding pheronomes to |delta|pheromones
+                for (int i = 1; i < n; i++) {
+                    int pos = mapto(newStatePos[i-1],newStatePos[i]);
+                    pheromonesChange[pos] += (q / perimeter);
                 }
-
-                // Adding to the ones i passed by
-                for (int i = 0; i < n - 1; i++) {
-                    int p1 = newStatePos[i], p2 = newStatePos[i + 1];
-                    pheromones[mapto(p1, p2)] += vRate * (q / perimeter);
-                }
-                pheromones[mapto(newStatePos[n - 1], newStatePos[0])] += q / perimeter;
+                pheromonesChange[mapto(newStatePos[n - 1], newStatePos[0])] += q / perimeter;
             }
+
+            // Updating pheromones
+            for(int i=0;i<n;i++){
+                for(int j=0;j<i;j++){
+                    int pos = mapto(i, j);
+                    pheromones[pos] = (1-vRate)*pheromones[pos]+ vRate*pheromonesChange[pos];
+                }
+            }
+            
+            // Constructing polygon with less area (if this one is not a solution then none are)
             for (int i = 0; i < n; i++)
                 newState[i] = this.state[bestStatePos[i]];
             intersections = interCount(newState, null);
+            //System.out.println(intersections);
             ++iter;
+            
+            
         }
         this.state = newState;
+        return bestperimeter;
     }
 
     // Returns the new state in position 0 and the perimeter in position 1
@@ -249,6 +272,16 @@ public class PoligSolver {
         return perimeter;
     }
 
+    // perimeterCount adapted to suit local search in ACO algorithm
+    public static int perimeterCount(MyPoint[] set, Integer[] pos) {
+        int perimeter = 0;
+        for (int i = 1; i < set.length; i++) {
+            perimeter += set[pos[i]].distance(set[pos[i - 1]]);
+        }
+        perimeter += set[pos[set.length - 1]].distance(set[pos[0]]);
+        return perimeter;
+    }
+
     // switches 2 points
     private static void swap(MyPoint[] set, int p1, int p2) {
         MyPoint temp;
@@ -256,6 +289,15 @@ public class PoligSolver {
         temp = set[p1];
         set[p1] = set[p2];
         set[p2] = temp;
+    }
+
+    // switches 2 points (adapted to suit ACO local search)
+    private static void swap(Integer pos[], int p1, int p2) {
+        int temp;
+        // switch points to try and fix the intersection
+        temp = pos[p1];
+        pos[p1] = pos[p2];
+        pos[p2] = temp;
     }
 
     // Hill climbing best improvement step
@@ -329,6 +371,25 @@ public class PoligSolver {
         }
         // got stuck no choice is better
         return 0;
+    }
+
+    // Hill climbing first improvement step adapted to suit ACO local search
+    public static Integer hillFirstStep(MyPoint[] set, Integer[] pos, int perimeter, Integer out[]) {
+        int n = set.length;
+        int candidate = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 2; j < n; j++) {
+                swap(pos, pos[i + 1], pos[j]);
+                candidate = perimeterCount(set, pos);
+                if (candidate < perimeter){
+                    for(int a=0;a<n;a++) out[a] = pos[a];
+                    return hillFirstStep(set, pos, candidate, out);
+                }
+                swap(pos, pos[i + 1], pos[j]);
+            }
+        }
+        // got stuck no choice is better
+        return perimeter;
     }
 
     private static int hillRandomStep(MyPoint[] set, int perimeter) {
