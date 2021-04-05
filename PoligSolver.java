@@ -8,7 +8,7 @@ public class PoligSolver {
 
     PoligSolver(Scanner in) {
         n = in.nextInt();
-        in.nextInt(); // m não utilizado neste caso
+        in.nextInt(); // m not utilized
         state = new MyPoint[n];
         for (int i = 1; i <= n; i++) {
             MyPoint point = new MyPoint(in.nextInt(), in.nextInt(), "P" + (i-1));
@@ -28,6 +28,10 @@ public class PoligSolver {
 
     public int interCount(){
         return PoligSolver.interCount(this.state, null);
+    }
+
+    public int interCount(ArrayList<Integer> list){
+        return PoligSolver.interCount(this.state, list);
     }
 
     public int perimeterCount(){
@@ -95,14 +99,23 @@ public class PoligSolver {
                 Object[] path = this.antPath(startPos, alfa, beta, dist, pheromones);
                 Integer[] newStatePos = ((Integer[]) path[0]);
                 int perimeter = ((Integer) path[1]);
-
+                
                 if(useLocalSearch){
                     // Local search (using hill climbing first step search)
-                    Integer[] output = new Integer[n];
-                    perimeter = hillFirstStep(this.state, newStatePos, perimeter, output);
-                    if(output[0] != null) newStatePos = output;
+                    for(int i=0;i<n;i++){
+                        for(int j=i+2;j<n;j++){
+                            // 2-exchange
+                            int r1 = this.state[newStatePos[i]].distance(this.state[newStatePos[i+1]]);
+                            int r2 = this.state[newStatePos[j]].distance(this.state[newStatePos[mod(j+1,n)]]);
+                            swap(newStatePos, i+1, j);
+                            int newr1 = this.state[newStatePos[i]].distance(this.state[newStatePos[i+1]]);
+                            int newr2 = this.state[newStatePos[j]].distance(this.state[newStatePos[mod(j+1,n)]]);
+                            if(r1+r2 < newr1+newr2) swap(newStatePos,i+1,j);
+                        }
+                    }
                 }
-                    
+                perimeter = perimeterCount(this.state, newStatePos);
+                
                 if (perimeter < bestperimeter) {
                     bestStatePos = newStatePos;
                 }
@@ -242,9 +255,8 @@ public class PoligSolver {
         return false;
     }
 
-    // counts number of intersections in a 2d graph of line segments and saves the
-    // points in choices
-    // complexidade temporal: O(n^2)
+    // counts number of intersections in a 2d graph of line segments and saves the points in choices 
+    // complexidade temporal: O(n^2) spacial complexity: O(n) (because of the choices array)
     private static int interCount(MyPoint[] set, ArrayList<Integer> choices) {
         int count = 0;
         for (int i = 0; i < set.length; i++) {
@@ -285,7 +297,6 @@ public class PoligSolver {
     // switches 2 points
     private static void swap(MyPoint[] set, int p1, int p2) {
         MyPoint temp;
-        // switch points to try and fix the intersection
         temp = set[p1];
         set[p1] = set[p2];
         set[p2] = temp;
@@ -371,25 +382,6 @@ public class PoligSolver {
         }
         // got stuck no choice is better
         return 0;
-    }
-
-    // Hill climbing first improvement step adapted to suit ACO local search
-    private static Integer hillFirstStep(MyPoint[] set, Integer[] pos, int perimeter, Integer out[]) {
-        int n = set.length;
-        int candidate = 0;
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 2; j < n; j++) {
-                swap(pos, pos[i + 1], pos[j]);
-                candidate = perimeterCount(set, pos);
-                if (candidate < perimeter){
-                    for(int a=0;a<n;a++) out[a] = pos[a];
-                    return hillFirstStep(set, pos, candidate, out);
-                }
-                swap(pos, pos[i + 1], pos[j]);
-            }
-        }
-        // got stuck no choice is better
-        return perimeter;
     }
 
     private static int hillRandomStep(MyPoint[] set, int perimeter) {
