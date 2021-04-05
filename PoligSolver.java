@@ -384,6 +384,7 @@ public class PoligSolver {
         return 0;
     }
 
+    // Hill climbing random step improvement
     private static int hillRandomStep(MyPoint[] set, int perimeter) {
         int n = set.length;
         ArrayList<Integer[]> candidates = new ArrayList<>();
