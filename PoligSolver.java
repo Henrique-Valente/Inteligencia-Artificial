@@ -139,7 +139,6 @@ public class PoligSolver {
             for (int i = 0; i < n; i++)
                 newState[i] = this.state[bestStatePos[i]];
             intersections = interCount(newState, null);
-            //System.out.println(intersections);
             ++iter;
             
             
