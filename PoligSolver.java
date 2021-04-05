@@ -101,7 +101,7 @@ public class PoligSolver {
                 int perimeter = ((Integer) path[1]);
                 
                 if(useLocalSearch){
-                    // Local search (using hill climbing first step search)
+                    // Local search
                     for(int i=0;i<n;i++){
                         for(int j=i+2;j<n;j++){
                             // 2-exchange
