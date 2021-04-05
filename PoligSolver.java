@@ -512,19 +512,21 @@ public class PoligSolver {
         return save;
     }
     
+    public void useNearestNeib(){         this.state = nearestNeib();     }
+    
     public static double schedule(double t, double r){
         return t * r;
     }
 
     public void simulatedAnnealing(double temp, double r){
         int curEnergy, nextEnergy, deltaEn; // Quantidade de interseções de cada permutação
-        int p1                      , p2;
+        int p1, p2;
         Random rand = new Random();
         MyPoint[] next;
         ArrayList<Integer> interceptionsCur = new ArrayList<>();
         curEnergy = interCount(state,interceptionsCur);
    
-        for(int i=1; i<Integer.MAX_VALUE; i++){//static is life
+        for(int i=1; i<Integer.MAX_VALUE; i++){
             if(curEnergy == 0) return; //Se não houver interseções, retornar
             temp = schedule(temp,r);
             if(temp < 0.001) return;
