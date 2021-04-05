@@ -508,7 +508,6 @@ public class PoligSolver {
             save[count] = state[start];
             count++;
         }
-
         return save;
     }
     

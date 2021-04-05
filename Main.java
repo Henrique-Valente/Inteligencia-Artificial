@@ -4,17 +4,18 @@ public class Main {
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
         PoligSolver p1 = new PoligSolver(in);
-        //PoligSolver p1 = new PoligSolver(60, 20);
+        //PoligSolver p1 = new PoligSolver(40, 20);
+        System.out.println(p1.interCount()+" "+p1.perimeterCount());
         MyPoint[] save = p1.state;
 
         System.out.println(p1.details());
-        p1.ACO2(1000, 5, 1, 5, 500, 0.5, true);
+        p1.ACO2(1000, 10, 1, 5, 500, 0.5, true);
         System.out.println(p1.details());
         System.out.println(p1.interCount()+" "+p1.perimeterCount());
         //p1.showGraph(1920, 1080, 25);
 
         p1.state = save;
-        p1.ACO2(1000,5,1,5,500,0.5,false);
+        p1.ACO2(1000,10,1,5,500,0.5,false);
         System.out.println(p1.details());
         System.out.println(p1.interCount()+" "+p1.perimeterCount());
         //p1.showGraph(1920, 1080, 25);
