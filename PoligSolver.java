@@ -511,6 +511,8 @@ public class PoligSolver {
         return save;
     }
     
+    public void useNearestNeib(){         this.state = nearestNeib();     }
+    
     public static double schedule(double t, double r){
         return t * r;
     }
