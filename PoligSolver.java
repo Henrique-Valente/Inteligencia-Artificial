@@ -326,7 +326,7 @@ public class PoligSolver {
 
             // restauring original set
             swap(set, mod(choices.get(i) + 1, n), choices.get(i + 1));
-            // if we reached a local maximum (possibly global) save
+            // if we reached a local minimum (possibly global) save
             if (bestChoice > candidate) {
                 bestChoice = candidate;
                 nextChoiceList = candidateList;
