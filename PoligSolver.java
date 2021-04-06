@@ -39,22 +39,18 @@ public class PoligSolver {
     }
 
     // Executes ACO with maxIter number of iternations
-    public void ACO2(int maxIter, int kAnts, final double alfa, final double beta, final double q, final double vRate, boolean useLocalSearch) {
+    public void ACO(int maxIter, int kAnts, final double alfa, final double beta, final double q, final double vRate, boolean useLocalSearch) {
         if (kAnts > n)
             return;
         this.ACOIter(maxIter, kAnts, alfa, beta, q, vRate, useLocalSearch);
     }
 
-    public void ACO(int kAnts, final double alfa, final double beta, final double q, final double vRate, boolean useLocalSearch) {
+    public void ACO2(int kAnts, final double alfa, final double beta, final double q, final double vRate, boolean useLocalSearch) {
         // Because no int is greater than Integer.MAX_VALUE it will never end
         this.ACOIter(Integer.MAX_VALUE, kAnts, alfa, beta, q, vRate, useLocalSearch);
     }
 
-    /*
-     * como o perimetro vai diminuindo e |delta|pheromona(i,j) = q/(perimetro de
-     * caminho) melhorias pequeninas não são muito beneficadas por isso da sempre um
-     * numero pequeno mas maior de 0
-     */
+
     private int ACOIter(int maxIter, int kAnts, final double alfa, final double beta, final double q,
             final double vRate, boolean useLocalSearch) {
         int iter = 1;
@@ -140,8 +136,6 @@ public class PoligSolver {
                 newState[i] = this.state[bestStatePos[i]];
             intersections = interCount(newState, null);
             ++iter;
-            
-            
         }
         this.state = newState;
         return bestperimeter;
@@ -152,8 +146,7 @@ public class PoligSolver {
         Integer[] newStatePos = new Integer[n];
         // represents nodes that have not been visited yet
         LinkedList<Integer> notVis = new LinkedList<>();
-        // pos is simply used to convert from the matrix (i,j) form to the array form
-        // using mapto
+        // pos is simply used to convert from the matrix (i,j) form to the array form using mapto
         int pos, newStateSize = 0, perimeter = 0;
         double sum = 0;
         newStatePos[0] = startPos;
