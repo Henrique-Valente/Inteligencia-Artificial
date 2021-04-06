@@ -3,11 +3,17 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
-        PoligSolver Exemplo2 = new PoligSolver(40,20);
-        Exemplo2.simulatedAnnealing(1000, 0.995);
-        //System.out.println(Exemplo2.details());
-        System.out.println(Exemplo2.interCount());
+        PoligSolver p1 = new PoligSolver(40,20);
+        System.out.println(p1.details());
+        MyPoint[] save = p1.state.clone();
         
+        p1.simulatedAnnealing(100000, 0.995);
+        System.out.println(p1.interCount());
+        
+        p1.state = save;
+        p1.ACO(100, 20, 1, 5, 500, 0.5, true);
+        System.out.println(p1.interCount());
+
     }
 }
 

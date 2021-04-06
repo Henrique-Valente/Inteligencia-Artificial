@@ -77,13 +77,12 @@ public class PoligSolver {
         Random rand = new Random();
         int intersections = interCount(state, null), bestperimeter=Integer.MAX_VALUE;
         MyPoint[] newState = new MyPoint[n];
-        
+        if(intersections == 0) return -1;
         while (intersections > 0 && iter <= maxIter) {
             Arrays.fill(pheromonesChange,0);
             usedStartPoints.clear();
             for (int k = 0; k < kAnts; k++) {
                 bestperimeter = Integer.MAX_VALUE;
-
                 // start at a random point
                 int startPos = rand.nextInt(n);
                 while (usedStartPoints.contains(startPos)) {
