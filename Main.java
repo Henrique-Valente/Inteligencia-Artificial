@@ -3,25 +3,16 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
-        PoligSolver Exemplo2 = new PoligSolver(in);
-        // save current state to restaur it later on
-        MyPoint[] save = Exemplo2.state;
-
-        System.out.println(Exemplo2.details());
-
-        System.out.println("Hill Climbing a)");
-        Exemplo2.ACO2('a');
-        System.out.println(Exemplo2);
-        System.out.println("Number of intersections: " + Exemplo2.interCount());
-    
-        //restauring state
-        Exemplo2.state = save;
+        PoligSolver Exemplo2 = new PoligSolver(40,20);
+        Exemplo2.simulatedAnnealing(1000, 0.995);
+        //System.out.println(Exemplo2.details());
+        System.out.println(Exemplo2.interCount());
         
-
     }
 }
 
 /*
+PARA RESULTADOS
 Para ajudar a mostrar que quando maxIter aumenta a função converge
 public static void main(String[] args) {
         double avg = 0;

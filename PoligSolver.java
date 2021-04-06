@@ -509,33 +509,39 @@ public class PoligSolver {
     public static double schedule(double t, double r){
         return t * r;
     }
-
+    
+    @SuppressWarnings("unchecked")
     public void simulatedAnnealing(double temp, double r){
         int curEnergy, nextEnergy, deltaEn; // Quantidade de interseções de cada permutação
         int p1, p2;
         Random rand = new Random();
-        MyPoint[] next;
-        ArrayList<Integer> interceptionsCur = new ArrayList<>();
+        ArrayList<Integer> interceptionsCur = new ArrayList<>(), nextInterceptionsCur = new ArrayList<>();
         curEnergy = interCount(state,interceptionsCur);
    
         for(int i=1; i<Integer.MAX_VALUE; i++){
+            nextInterceptionsCur = new ArrayList<>();
             if(curEnergy == 0) return; //Se não houver interseções, retornar
             temp = schedule(temp,r);
             if(temp < 0.001) return;
-            next = state.clone();
-            p1 = interceptionsCur.remove(rand.nextInt(interceptionsCur.size()));
-            p2 = interceptionsCur.remove(rand.nextInt(interceptionsCur.size()));
-            swap(next,mod(p1+1, n),p2);  // 2 Exchange!
-            nextEnergy = interCount(next,new ArrayList<Integer>());
+            if(interceptionsCur.isEmpty()) System.out.println("FUCK " + curEnergy + " " +this.interCount());
+            int random = rand.nextInt(interceptionsCur.size()-1);
+            p1 = interceptionsCur.remove(random);
+            p2 = interceptionsCur.remove(random);
+            swap(state,mod(p1+1, n),p2);  // 2 Exchange!
+            nextEnergy = interCount(state,nextInterceptionsCur);
             deltaEn = nextEnergy - curEnergy;
             if(deltaEn < 0){
-                state = next.clone();
                 curEnergy = nextEnergy;
+                interceptionsCur = ((ArrayList<Integer>)nextInterceptionsCur.clone());
             }
             else if(Math.exp((-deltaEn)/temp) >= Math.random()){
-                state = next;  // entre 0 e 1
                 curEnergy = nextEnergy;
+                interceptionsCur = ((ArrayList<Integer>)nextInterceptionsCur.clone());
             }
+            else{
+                swap(state,mod(p1+1, n),p2);
+            }
+            // chegando aqui significa q nao mudou de estado
         }
         return;
     }
