@@ -519,11 +519,11 @@ public class PoligSolver {
         curEnergy = interCount(state,interceptionsCur);
    
         for(int i=1; i<Integer.MAX_VALUE; i++){
-            nextInterceptionsCur = new ArrayList<>();
+            nextInterceptionsCur.clear();
             if(curEnergy == 0) return; //Se não houver interseções, retornar
             temp = schedule(temp,r);
             if(temp < 0.001) return;
-            if(interceptionsCur.isEmpty()) System.out.println("FUCK " + curEnergy + " " +this.interCount());
+
             int random = rand.nextInt(interceptionsCur.size()-1);
             p1 = interceptionsCur.remove(random);
             p2 = interceptionsCur.remove(random);
@@ -540,6 +540,8 @@ public class PoligSolver {
             }
             else{
                 swap(state,mod(p1+1, n),p2);
+                interceptionsCur.add(p1);
+                interceptionsCur.add(p2);
             }
             // chegando aqui significa q nao mudou de estado
         }
